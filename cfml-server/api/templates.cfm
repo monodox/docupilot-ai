@@ -11,7 +11,7 @@
   <cfif cgi.request_method EQ "DELETE">
     <cfset id = url.id>
     
-    <cfquery name="qDelete" datasource="decree_db">
+    <cfquery name="qDelete" datasource="docupilot_db">
       DELETE FROM templates
       WHERE id = <cfqueryparam value="#id#" cfsqltype="cf_sql_integer">
     </cfquery>
@@ -21,7 +21,7 @@
       "message": "Template deleted successfully"
     }>
   <cfelse>
-    <cfquery name="qTemplates" datasource="decree_db">
+    <cfquery name="qTemplates" datasource="docupilot_db">
     SELECT id, name, description, content, category, is_public, created_at
     FROM templates
     WHERE is_public = 1

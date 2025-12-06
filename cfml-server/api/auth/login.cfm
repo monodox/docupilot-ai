@@ -25,7 +25,7 @@
     }>
   <cfelse>
     <!--- Validate credentials --->
-    <cfquery name="qUser" datasource="decree_db">
+    <cfquery name="qUser" datasource="docupilot_db">
       SELECT id, first_name, last_name, email
       FROM users
       WHERE email = <cfqueryparam value="#trim(data.email)#" cfsqltype="cf_sql_varchar">

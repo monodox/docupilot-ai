@@ -9,7 +9,7 @@
 
 <cftry>
   <cfif cgi.request_method EQ "GET">
-    <cfquery name="qDocuments" datasource="decree_db">
+    <cfquery name="qDocuments" datasource="docupilot_db">
       SELECT id, user_id, title, content, category, status, created_at, updated_at
       FROM documents
       ORDER BY created_at DESC
@@ -36,7 +36,7 @@
   <cfelseif cgi.request_method EQ "DELETE">
     <cfset id = url.id>
     
-    <cfquery name="qDelete" datasource="decree_db">
+    <cfquery name="qDelete" datasource="docupilot_db">
       DELETE FROM documents
       WHERE id = <cfqueryparam value="#id#" cfsqltype="cf_sql_integer">
     </cfquery>
@@ -50,7 +50,7 @@
     <cfset requestBody = toString(httpData.content)>
     <cfset data = deserializeJSON(requestBody)>
     
-    <cfquery name="qInsert" datasource="decree_db">
+    <cfquery name="qInsert" datasource="docupilot_db">
       INSERT INTO documents (user_id, title, content, category, status)
       VALUES (
         <cfqueryparam value="#data.userId#" cfsqltype="cf_sql_integer">,

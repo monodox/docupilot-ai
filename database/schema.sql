@@ -1,7 +1,7 @@
--- Database Schema for CFML Authentication System
+-- Database Schema for DocuPilot AI
 
-CREATE DATABASE cfml_auth;
-USE cfml_auth;
+CREATE DATABASE docupilot_db;
+USE docupilot_db;
 
 -- Users table
 CREATE TABLE users (
@@ -18,6 +18,46 @@ CREATE TABLE users (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Insert test user
+-- Documents table
+CREATE TABLE documents (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    content TEXT,
+    category VARCHAR(100),
+    status VARCHAR(50) DEFAULT 'draft',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+-- Templates table
+CREATE TABLE templates (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    content TEXT,
+    category VARCHAR(100),
+    is_public BOOLEAN DEFAULT TRUE,
+    created_by INT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (created_by) REFERENCES users(id)
+);
+
+-- Sample users
 INSERT INTO users (first_name, last_name, email, password, email_verified) 
-VALUES ('Admin', 'User', 'admin@test.com', 'password123', TRUE);
+VALUES 
+('Hrudu', 'Shibu', 'hrudu.shibu@monodox.com', 'Password@123', TRUE),
+('Test', 'User', 'test@example.com', 'password', TRUE);
+
+-- Sample templates
+INSERT INTO templates (name, description, content, category, created_by) 
+VALUES 
+('NDA Template', 'Standard Non-Disclosure Agreement', 'This NDA template...', 'Legal', 1),
+('Employment Contract', 'Standard employment agreement template', 'Employment contract content...', 'HR', 1);
+
+-- Sample documents
+INSERT INTO documents (user_id, title, content, category, status) 
+VALUES 
+(1, 'Client Agreement - Acme Corp', 'Agreement content...', 'Legal', 'draft'),
+(2, 'Privacy Policy Draft', 'Privacy policy content...', 'Compliance', 'review');

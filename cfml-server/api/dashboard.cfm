@@ -8,15 +8,15 @@
 </cfif>
 
 <cftry>
-  <cfquery name="qDocCount" datasource="decree_db">
+  <cfquery name="qDocCount" datasource="docupilot_db">
     SELECT COUNT(*) as total FROM documents
   </cfquery>
   
-  <cfquery name="qTemplateCount" datasource="decree_db">
+  <cfquery name="qTemplateCount" datasource="docupilot_db">
     SELECT COUNT(*) as total FROM templates
   </cfquery>
   
-  <cfquery name="qUserCount" datasource="decree_db">
+  <cfquery name="qUserCount" datasource="docupilot_db">
     SELECT COUNT(*) as total FROM users
   </cfquery>
   

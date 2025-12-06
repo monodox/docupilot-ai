@@ -23,7 +23,7 @@
       "message": "Email is required"
     }>
   <cfelse>
-    <cfquery name="qUpdate" datasource="decree_db">
+    <cfquery name="qUpdate" datasource="docupilot_db">
       UPDATE users
       SET 
         first_name = <cfqueryparam value="#trim(data.firstName)#" cfsqltype="cf_sql_varchar">,
@@ -31,7 +31,7 @@
       WHERE email = <cfqueryparam value="#trim(data.email)#" cfsqltype="cf_sql_varchar">
     </cfquery>
     
-    <cfquery name="qUser" datasource="decree_db">
+    <cfquery name="qUser" datasource="docupilot_db">
       SELECT id, first_name, last_name, email
       FROM users
       WHERE email = <cfqueryparam value="#trim(data.email)#" cfsqltype="cf_sql_varchar">

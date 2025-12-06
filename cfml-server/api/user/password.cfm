@@ -23,7 +23,7 @@
       "message": "All fields are required"
     }>
   <cfelse>
-    <!--- Verify current password --->\n    <cfquery name="qVerify" datasource="decree_db">
+    <!--- Verify current password --->\n    <cfquery name="qVerify" datasource="docupilot_db">
       SELECT id
       FROM users
       WHERE email = <cfqueryparam value="#trim(data.email)#" cfsqltype="cf_sql_varchar">
@@ -36,7 +36,7 @@
         "message": "Current password is incorrect"
       }>
     <cfelse>
-      <!--- Update password --->\n      <cfquery name="qUpdate" datasource="decree_db">
+      <!--- Update password --->\n      <cfquery name="qUpdate" datasource="docupilot_db">
         UPDATE users
         SET password = <cfqueryparam value="#trim(data.newPassword)#" cfsqltype="cf_sql_varchar">
         WHERE email = <cfqueryparam value="#trim(data.email)#" cfsqltype="cf_sql_varchar">
