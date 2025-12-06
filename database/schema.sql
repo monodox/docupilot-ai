@@ -44,10 +44,9 @@ CREATE TABLE templates (
     FOREIGN KEY (created_by) REFERENCES users(id)
 );
 
--- Sample users
+-- Sample user
 INSERT INTO users (first_name, last_name, email, password, email_verified) 
 VALUES 
-('Hrudu', 'Shibu', 'hrudu.shibu@monodox.com', 'Password@123', TRUE),
 ('Test', 'User', 'test@example.com', 'password', TRUE);
 
 -- Sample templates
@@ -56,8 +55,7 @@ VALUES
 ('NDA Template', 'Standard Non-Disclosure Agreement', 'This NDA template...', 'Legal', 1),
 ('Employment Contract', 'Standard employment agreement template', 'Employment contract content...', 'HR', 1);
 
--- Sample documents
+-- Sample document
 INSERT INTO documents (user_id, title, content, category, status) 
 VALUES 
-(1, 'Client Agreement - Acme Corp', 'Agreement content...', 'Legal', 'draft'),
-(2, 'Privacy Policy Draft', 'Privacy policy content...', 'Compliance', 'review');
+(1, 'Privacy Policy Draft', 'Privacy policy content...', 'Compliance', 'draft');
