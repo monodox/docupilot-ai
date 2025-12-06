@@ -3,13 +3,42 @@
 import { useState } from 'react';
 import { Input, Button } from '@/components/ui';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Sparkles } from 'lucide-react';
 
 export default function NewDocument() {
   const [formData, setFormData] = useState({ title: '', category: '', content: '' });
+  const [aiPrompt, setAiPrompt] = useState('');
   const [loading, setLoading] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
   const [message, setMessage] = useState('');
   const router = useRouter();
+
+  const generateWithAI = async () => {
+    if (!aiPrompt || !formData.category) {
+      setMessage('Please enter a prompt and select a category');
+      return;
+    }
+    setAiLoading(true);
+    setMessage('');
+    try {
+      const response = await fetch('/api/ai/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: aiPrompt, category: formData.category })
+      });
+      const result = await response.json();
+      if (result.success) {
+        setFormData({...formData, content: result.content});
+        setMessage('AI generated content successfully! Review: ' + result.review);
+      } else {
+        setMessage(result.message || 'AI generation failed');
+      }
+    } catch (error) {
+      setMessage('Error generating content with AI');
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   const createDocument = async () => {
     if (!formData.title) {
@@ -51,6 +80,31 @@ export default function NewDocument() {
       <h1 className="text-3xl font-bold mb-6">Create New Document</h1>
       
       <div className="max-w-3xl space-y-6">
+        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-blue-600" />
+            AI Document Generator
+          </h3>
+          <div className="space-y-3">
+            <Input
+              value={aiPrompt}
+              onChange={(e) => setAiPrompt(e.target.value)}
+              placeholder="Describe what you want to create (e.g., 'Create an NDA for software development')"
+              className="w-full"
+            />
+            <Button 
+              onClick={generateWithAI} 
+              disabled={aiLoading || !formData.category}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              {aiLoading ? 'Generating with AI...' : 'Generate with AI'}
+            </Button>
+          </div>
+        </div>
+        
+        <div className="border-t pt-6">
+          <h3 className="text-lg font-semibold mb-4">Document Details</h3>
+        </div>
         <div>
           <label className="block text-sm font-medium mb-2">Title *</label>
           <Input

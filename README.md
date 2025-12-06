@@ -85,6 +85,7 @@ docupilot-ai/
 - **Node.js** (>= 20.0.0)
 - **Adobe ColdFusion 2025 Server**
 - **XAMPP** (MySQL + Apache)
+- **Ollama** (for AI features)
 - **npm** or **yarn**
 
 ### Step 1: Install Dependencies
@@ -193,7 +194,24 @@ NEXT_PUBLIC_CF_API_URL=http://localhost:8500
 CF_API_URL=http://localhost:8500
 ```
 
-### Step 5: Start Development Server
+### Step 5: Setup Ollama (Optional - for AI features)
+
+1. Install Ollama from https://ollama.com
+2. Pull required models:
+
+```bash
+ollama pull gemma2
+```
+
+3. Start Ollama server:
+
+```bash
+ollama serve
+```
+
+Ollama will run on `http://localhost:11434`
+
+### Step 6: Start Development Server
 
 ```bash
 npm run dev
@@ -220,15 +238,20 @@ npm run lint     # Run ESLint
 - ✅ Show/hide password toggle
 
 ### Document Management
-- ✅ Create documents with modal popup
+- ✅ Create documents with full-page form
+- ✅ AI-powered document generation with Ollama
+- ✅ Multi-model approach (Creator + Moderator)
 - ✅ View all documents with status badges
-- ✅ Document categorization (Legal, HR, Compliance)
+- ✅ Document categorization (Legal, HR, Compliance, Finance, Operations)
 - ✅ Draft/Review status tracking
+- ✅ Edit and delete documents
+- ✅ Semantic embeddings for search
 
 ### Templates
 - ✅ Pre-built legal and compliance templates
 - ✅ Template library with categories
 - ✅ Public/private template support
+- ✅ Edit and delete templates
 
 ### Dashboard
 - ✅ Real-time statistics (documents, templates, users)
@@ -241,6 +264,120 @@ npm run lint     # Run ESLint
 - ✅ Password change with validation
 - ✅ Theme preferences
 - ✅ ColdFusion configuration
+
+## 🤖 AI Features
+
+### Multi-Agent RAG Architecture
+
+DocuPilot AI uses a sophisticated multi-agent system with RAG (Retrieval-Augmented Generation) for intelligent document processing:
+
+#### Agent Architecture
+
+**1. Extract Agent**
+- **Purpose**: Document ingestion and preprocessing
+- **Capabilities**:
+  - Reads raw documents (PDF, DOCX, images)
+  - Performs OCR if needed
+  - Breaks content into text, metadata, and sections
+  - Creates clean, machine-usable representation
+- **Model**: Gemma2
+- **Output**: Structured text with metadata
+
+**2. Catalog Agent**
+- **Purpose**: Content organization and indexing
+- **Capabilities**:
+  - Creates embeddings using embedding-gemma
+  - Stores in vector database (RAG)
+  - Maintains document → section → embedding relationships
+  - Updates, deletes, or re-indexes content
+- **Model**: embedding-gemma (embeddings), Gemma2 (processing)
+- **Output**: Searchable vector store
+
+**3. Retrieve Agent**
+- **Purpose**: Intelligent content retrieval
+- **Capabilities**:
+  - Finds most relevant content for user requests
+  - Pulls sections, facts, policies from vector store
+  - Provides context to other agents
+  - Ensures generation is grounded in real knowledge
+- **Model**: embedding-gemma (similarity search), Gemma2 (ranking)
+- **Output**: Relevant context for generation
+
+**4. Compose Agent**
+- **Purpose**: Document generation and drafting
+- **Capabilities**:
+  - Generates drafts, summaries, reports
+  - Uses retrieved context + templates + instructions
+  - Produces clean, consistent, human-ready text
+  - Iterative refinement (revise, rewrite, expand)
+- **Model**: Gemma2
+- **Output**: Draft documents
+
+**5. Validate Agent**
+- **Purpose**: Quality assurance and compliance
+- **Capabilities**:
+  - Checks quality, compliance, accuracy
+  - Detects policy violations, inconsistencies
+  - Performs risk checks and PII detection
+  - Can reject, approve, or request revision
+- **Model**: Gemma2
+- **Output**: Validation report with approval status
+
+### Ollama Setup
+
+```bash
+# Install Ollama
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Pull required models
+ollama pull gemma2              # For all agents
+ollama pull embedding-gemma     # For embeddings
+
+# Start Ollama server
+ollama serve  # Runs on http://localhost:11434
+```
+
+### RAG Workflow
+
+```
+1. User uploads document → Extract Agent
+2. Extract Agent → Catalog Agent (creates embeddings)
+3. User requests document → Retrieve Agent (searches vector DB)
+4. Retrieve Agent → Compose Agent (provides context)
+5. Compose Agent → Validate Agent (checks output)
+6. Validate Agent → User (approved document)
+```
+
+### Features
+
+- **AI-Powered Generation**: Natural language prompts to documents
+- **RAG-Enhanced Context**: Retrieves relevant information from existing documents
+- **Multi-Agent Validation**: 5-stage processing pipeline
+- **Semantic Search**: Vector embeddings for intelligent retrieval
+- **Compliance Checking**: Automated policy and risk validation
+- **Local Processing**: No external API calls, complete privacy
+- **Iterative Refinement**: Continuous improvement through agent feedback
+
+### Usage
+
+**Document Generation:**
+1. Navigate to Create Document page
+2. Enter prompt (e.g., "Create an NDA for software development")
+3. Select document category
+4. Click "Generate with AI"
+5. System executes multi-agent workflow:
+   - Retrieve: Finds similar documents
+   - Compose: Generates draft with context
+   - Validate: Checks compliance
+6. Review AI-generated content with validation report
+7. Edit and save document
+
+**Document Upload & Indexing:**
+1. Upload existing documents
+2. Extract Agent processes content
+3. Catalog Agent creates embeddings
+4. Documents become searchable in RAG system
+5. Future generations use this knowledge base
 
 ## 🎯 Demo Accounts
 
@@ -313,7 +450,10 @@ For testing purposes, the following demo accounts are available:
 ### Backend
 - **Server**: Adobe ColdFusion 2025
 - **Database**: MySQL 8.0 (via XAMPP)
+- **Vector Store**: In-memory embeddings (production: Chroma/Pinecone)
 - **API**: RESTful JSON endpoints
+- **AI Engine**: Ollama with Gemma2 + embedding-gemma
+- **Architecture**: Multi-agent RAG system (5 agents)
 
 ### Development
 - **Package Manager**: npm
@@ -369,14 +509,24 @@ For security concerns, please review our [Security Policy](SECURITY.md).
 
 ## 🗺️ Roadmap
 
+### Core Features
 - [ ] Email verification
 - [ ] Document versioning
 - [ ] Collaborative editing
-- [ ] Advanced search
 - [ ] PDF/DOCX export
 - [ ] Mobile app
 - [ ] API documentation
 - [ ] Docker support
+
+### AI & RAG Enhancements
+- [ ] Full multi-agent implementation (Extract, Catalog, Retrieve, Compose, Validate)
+- [ ] Vector database integration (Chroma/Pinecone)
+- [ ] Document upload and OCR processing
+- [ ] Advanced semantic search
+- [ ] Policy compliance engine
+- [ ] PII detection and redaction
+- [ ] Multi-language support
+- [ ] Custom model fine-tuning
 
 ## ⚖️ Code of Conduct
 
