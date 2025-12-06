@@ -154,7 +154,6 @@ CREATE TABLE templates (
 -- Sample users
 INSERT INTO users (first_name, last_name, email, password, email_verified) 
 VALUES 
-('Hrudu', 'Shibu', 'hrudu.shibu@monodox.com', 'Password@123', TRUE),
 ('Test', 'User', 'test@example.com', 'password', TRUE);
 ```
 
@@ -200,7 +199,8 @@ CF_API_URL=http://localhost:8500
 2. Pull required models:
 
 ```bash
-ollama pull gemma2
+ollama pull gemma3
+ollama pull embeddinggemma
 ```
 
 3. Start Ollama server:
@@ -290,7 +290,7 @@ DocuPilot AI uses a sophisticated multi-agent system with RAG (Retrieval-Augment
   - Stores in vector database (RAG)
   - Maintains document → section → embedding relationships
   - Updates, deletes, or re-indexes content
-- **Model**: embedding-gemma (embeddings), Gemma2 (processing)
+- **Model**: embeddinggemma (embeddings), Gemma3 (processing)
 - **Output**: Searchable vector store
 
 **3. Retrieve Agent**
@@ -300,7 +300,7 @@ DocuPilot AI uses a sophisticated multi-agent system with RAG (Retrieval-Augment
   - Pulls sections, facts, policies from vector store
   - Provides context to other agents
   - Ensures generation is grounded in real knowledge
-- **Model**: embedding-gemma (similarity search), Gemma2 (ranking)
+- **Model**: embeddinggemma (similarity search), Gemma3 (ranking)
 - **Output**: Relevant context for generation
 
 **4. Compose Agent**
@@ -330,8 +330,8 @@ DocuPilot AI uses a sophisticated multi-agent system with RAG (Retrieval-Augment
 curl -fsSL https://ollama.com/install.sh | sh
 
 # Pull required models
-ollama pull gemma2              # For all agents
-ollama pull embedding-gemma     # For embeddings
+ollama pull gemma3              # For all agents
+ollama pull embeddinggemma      # For embeddings
 
 # Start Ollama server
 ollama serve  # Runs on http://localhost:11434
@@ -385,7 +385,6 @@ For testing purposes, the following demo accounts are available:
 
 | Email | Password | Role |
 |-------|----------|------|
-| hrudu.shibu@monodox.com | Password@123 | Admin |
 | test@example.com | password | User |
 
 > ⚠️ **Security Note**: Change these credentials in production!
@@ -452,7 +451,7 @@ For testing purposes, the following demo accounts are available:
 - **Database**: MySQL 8.0 (via XAMPP)
 - **Vector Store**: In-memory embeddings (production: Chroma/Pinecone)
 - **API**: RESTful JSON endpoints
-- **AI Engine**: Ollama with Gemma2 + embedding-gemma
+- **AI Engine**: Ollama with Gemma3 + embeddinggemma
 - **Architecture**: Multi-agent RAG system (5 agents)
 
 ### Development

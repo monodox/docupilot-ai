@@ -11,6 +11,7 @@ export default function NewDocument() {
   const [loading, setLoading] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [validation, setValidation] = useState<any>(null);
   const router = useRouter();
 
   const generateWithAI = async () => {
@@ -21,17 +22,19 @@ export default function NewDocument() {
     setAiLoading(true);
     setMessage('');
     try {
-      const response = await fetch('/api/ai/generate', {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const response = await fetch('/api/agents/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: aiPrompt, category: formData.category })
+        body: JSON.stringify({ prompt: aiPrompt, category: formData.category, userId: user.id })
       });
       const result = await response.json();
-      if (result.success) {
-        setFormData({...formData, content: result.content});
-        setMessage('AI generated content successfully! Review: ' + result.review);
+      if (result.title && result.content) {
+        setFormData({...formData, title: result.title, content: result.content});
+        setValidation(result.validation);
+        setMessage(`Generated successfully! Score: ${result.validation.score}/100 - ${result.validation.approved ? 'Approved' : 'Needs Review'}`);
       } else {
-        setMessage(result.message || 'AI generation failed');
+        setMessage(result.error || 'AI generation failed');
       }
     } catch (error) {
       setMessage('Error generating content with AI');
@@ -141,7 +144,34 @@ export default function NewDocument() {
           />
         </div>
         
-        {message && <p className={`text-sm ${message.includes('success') ? 'text-green-600' : 'text-red-600'}`}>{message}</p>}
+        {message && <p className={`text-sm ${message.includes('success') || message.includes('Generated') ? 'text-green-600' : 'text-red-600'}`}>{message}</p>}
+        
+        {validation && (
+          <div className="p-4 bg-gray-50 dark:bg-gray-800 border rounded-lg">
+            <h4 className="font-semibold mb-2">Validation Report</h4>
+            <p className="text-sm mb-2">Score: {validation.score}/100 - Status: {validation.approved ? '✅ Approved' : '⚠️ Needs Review'}</p>
+            {validation.issues.length > 0 && (
+              <div className="mb-2">
+                <p className="text-sm font-medium">Issues:</p>
+                <ul className="text-sm list-disc list-inside">
+                  {validation.issues.map((issue: any, i: number) => (
+                    <li key={i} className={issue.severity === 'high' ? 'text-red-600' : issue.severity === 'medium' ? 'text-yellow-600' : 'text-gray-600'}>
+                      [{issue.type}] {issue.message}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {validation.suggestions.length > 0 && (
+              <div>
+                <p className="text-sm font-medium">Suggestions:</p>
+                <ul className="text-sm list-disc list-inside">
+                  {validation.suggestions.map((s: string, i: number) => <li key={i}>{s}</li>)}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
         
         <div className="flex gap-3">
           <Button onClick={createDocument} disabled={loading}>
